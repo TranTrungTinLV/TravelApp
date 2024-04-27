@@ -16,21 +16,38 @@ const Expand = ({ navigation, route }) => {
     const onBack = () => {
         navigation.goBack()
     }
+    const mapStyle = [
+      { "elementType": "geometry", "stylers": [ { "color": "#f5f5f5" } ] },
+        {
+            elementType: 'labels.text.fill',
+            stylers: [
+                {
+                    color: '#746855', // Màu chữ trên bản đồ
+                },
+            ],
+        },
+        {
+            elementType: 'labels.text.stroke',
+            stylers: [
+                {
+                    color: '#242f3e', // Màu viền chữ trên bản đồ
+                },
+            ],
+        },
+    ];
     return (
         <View style={styles.container} >
             <MapView
                 style={styles.maps}
                 initialRegion={coords}
+                customMapStyle={mapStyle}
             >
                 <Marker
                     coordinate={coords}
                     title={item?.name}
                 />
-
-
-
             </MapView>
-            <View style={{ backgroundColor: 'rgba(255, 255, 255, 1)', position: 'absolute', width: width - 48, flexDirection: 'row', top: 50, borderRadius: 15, margin: 24, padding: 16, alignItems: 'center', gap: 34 }}>
+            <View style={{ backgroundColor: '#9ca3af', opacity:1, position: 'absolute', width: width - 48, flexDirection: 'row', top: 50, borderRadius: 15, margin: 24, padding: 16, alignItems: 'center', gap: 34 }}>
                 <TouchableOpacity onPress={onBack}>
                     <Entypo name="arrow-bold-left" size={40}  color="black" style={{height: 41, width: 41}} />
 
@@ -47,12 +64,14 @@ const Expand = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
     },
     maps: {
         // paddingTopTop: 30,
         width: '100%',
+        // backgroundColor: 'black',
         height: '100%',
+        // opacity: 0.6,
         // borderRadius: 20,
         // padding: 40
     }
