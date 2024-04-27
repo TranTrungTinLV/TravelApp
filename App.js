@@ -6,6 +6,7 @@ import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import Attraction from './src/screens/Attraction';
 import Gallery from './src/screens/Gallery';
+import Expand from './src/screens/Expand';
 
 const Stack = createStackNavigator()
 
@@ -23,6 +24,8 @@ export default function App() {
         <Stack.Screen component={Home} name='Home' />
         <Stack.Screen component={Attraction} name='Attraction' />
         <Stack.Screen component={Gallery} name='Gallery' />
+        <Stack.Screen component={Expand} name='Expand' />
+        
 
 
       </Stack.Navigator>

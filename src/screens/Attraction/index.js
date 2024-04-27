@@ -2,13 +2,17 @@ import React from "react";
 import { ImageBackground, SafeAreaView, StyleSheet, Text, View, Dimensions, Image, Pressable, TouchableOpacity } from "react-native";
 import Title from "../../components/title";
 import InfoCard from "../../components/Infocard";
-
+import MapView, { Marker } from "react-native-maps";
+import { ScrollView } from "react-native-gesture-handler";
+import { FontAwesome5 } from '@expo/vector-icons';
+import Expand from "../Expand";
 
 const screen = Dimensions.get('window')
 const { height } = screen
-
+ 
 const Attraction = ({ navigation, route }) => {
     const { item } = route?.params || {};
+    console.log("item >>", item)
     const mainImage = item?.images?.length ? item?.images[0] : null;
     const slicedImages = item?.images?.length ? item?.images?.slice(0, 5) : [];
     const diffImages = item?.images?.length - slicedImages?.length;
@@ -16,44 +20,74 @@ const Attraction = ({ navigation, route }) => {
         navigation.goBack()
     }
 
+    const onExpand = () => {
+        navigation.navigate('Expand', { item })
+    }
+
     const onGalleryNavigate = () => {
         navigation.navigate('Gallery', { images: item?.images })
     }
-    return (
-        <SafeAreaView style={styles.container}>
-            <ImageBackground style={styles.mainImage} imageStyle={{ borderRadius: 20 }} source={{ uri: mainImage }}>
-                <View style={styles.header} >
-                    <Pressable onPress={onBack} hitSlop={5}>
-                        <Image style={styles.icon} source={require('../../../assets/Group 6.png')} />
-                    </Pressable>
-                    <Pressable onPress={onBack} hitSlop={5}>
-                        <Image style={styles.icon} source={require('../../../assets/Group 5.png')} />
-                    </Pressable>
-                </View>
-                <Pressable style={styles.footer}>
-                    {slicedImages?.map((image, index) => (
-                        <View key={image}>
-                            <TouchableOpacity onPress={onGalleryNavigate}><Image source={{ uri: image }} style={styles.miniImage} /></TouchableOpacity>
-                            {diffImages > 0 && index === slicedImages?.length - 1 ? (
-                                <View style={styles.moreImagesContainer}>
-                                    <Text style={styles.moreImages}>{`+${diffImages}`}</Text>
-                                </View>
-                            ) : null}
-                        </View>))}
-                </Pressable>
-            </ImageBackground>
-            <View style={styles.headerContainer}>
-                <View style={styles.textContainer}>
-                    <Title style={styles.name} text={item?.name}></Title>
-                    <Text style={styles.city}>{item?.city}</Text>
-                </View>
-                <Title style={styles.price} text={item?.entry_price}></Title>
-            </View>
 
-            <View style={styles.groupIcon}>
-                <InfoCard text={item?.address} icon={require('../../../assets/Group 15.png')} />
-                <InfoCard text={`OPEN\n${item?.address}`} style={styles.timeWorking} icon={require('../../../assets/Group 16.png')} />
-            </View>
+    const coords = {
+        latitude: item?.coordinates?.lat,
+        longitude: item?.coordinates?.lon,
+        latitudeDelta: 0.009,
+        longitudeDelta: 0.009
+    }
+    return (
+
+        <SafeAreaView style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <ImageBackground style={styles.mainImage} imageStyle={{ borderRadius: 20 }} source={{ uri: mainImage }}>
+                    <View style={styles.header} >
+                        <Pressable onPress={onBack} hitSlop={5}>
+                            <Image style={styles.icon} source={require('../../../assets/Group 6.png')} />
+                        </Pressable>
+                        <Pressable onPress={onBack} hitSlop={5}>
+                            <Image style={styles.icon} source={require('../../../assets/Group 5.png')} />
+                        </Pressable>
+                    </View>
+                    <Pressable style={styles.footer}>
+                        {slicedImages?.map((image, index) => (
+                            <View key={image}>
+                                <TouchableOpacity onPress={onGalleryNavigate}><Image source={{ uri: image }} style={styles.miniImage} /></TouchableOpacity>
+                                {diffImages > 0 && index === slicedImages?.length - 1 ? (
+                                    <View style={styles.moreImagesContainer}>
+                                        <Text style={styles.moreImages}>{`+${diffImages}`}</Text>
+                                    </View>
+                                ) : null}
+                            </View>))}
+                    </Pressable>
+                </ImageBackground>
+                <View style={styles.headerContainer}>
+                    <View style={styles.textContainer}>
+                        <Title style={styles.name} text={item?.name}></Title>
+                        <Text style={styles.city}>{item?.city}</Text>
+                    </View>
+                    <Title style={styles.price} text={item?.entry_price}></Title>
+                </View>
+
+                <View style={styles.groupIcon}>
+                    <InfoCard text={item?.address} icon={require('../../../assets/Group 15.png')} />
+                    <InfoCard text={`OPEN\n${item?.address}`} style={styles.timeWorking} icon={require('../../../assets/Group 16.png')} />
+                </View>
+                <MapView
+                    style={styles.maps}
+                    initialRegion={coords}
+                >
+                    <TouchableOpacity hitSlop={5} onPress={onExpand}>
+                        <View style={{ justifyContent: 'flex-end', flexDirection: 'row', marginRight: 15, paddingTop: 10 }}>
+                            <FontAwesome5 name="expand-arrows-alt" size={20} color="black" />
+                        </View>
+                    </TouchableOpacity>
+                    <Marker
+
+                        coordinate={coords}
+                        title={item?.name}
+                    // description={marker.description}
+                    />
+                </MapView>
+            </ScrollView>
 
         </SafeAreaView>
     );
@@ -61,6 +95,7 @@ const Attraction = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         margin: 32
     },
     mainImage: {
@@ -138,5 +173,12 @@ const styles = StyleSheet.create({
     groupIcon: {
         paddingTop: 16
     },
+    maps: {
+        marginTop: 30,
+        width: '100%',
+        height: 200,
+        borderRadius: 20,
+        paddingBottom: 40
+    }
 })
 export default Attraction;
