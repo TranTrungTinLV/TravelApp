@@ -68,8 +68,8 @@ const Attraction = ({ navigation, route }) => {
                 </View>
 
                 <View style={styles.groupIcon}>
-                    <InfoCard text={item?.address} icon={require('../../../assets/Group 15.png')} />
-                    <InfoCard text={`OPEN\n${item?.address}`} style={styles.timeWorking} icon={require('../../../assets/Group 16.png')} />
+                    <InfoCard text={item?.address} style={styles.address} icon={require('../../../assets/Group 15.png')} />
+                    <InfoCard text={`OPEN\n${item?.opening_time}`} style={styles.timeWorking} icon={require('../../../assets/Group 16.png')} />
                 </View>
                 <MapView
                     style={styles.maps}
@@ -171,7 +171,8 @@ const styles = StyleSheet.create({
         color: 'rgba(0, 0, 0, 1)'
     },
     groupIcon: {
-        paddingTop: 16
+        paddingTop: 16,
+        gap: 35
     },
     maps: {
         marginTop: 30,
@@ -179,6 +180,14 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 20,
         paddingBottom: 40
+    },
+    timeWorking: {
+        fontSize: 10,
+        margin: 7
+    },
+    address: {
+        fontSize: 10,
+        margin: 7
     }
 })
 export default Attraction;
