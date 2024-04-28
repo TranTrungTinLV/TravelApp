@@ -6,10 +6,12 @@ import MapView, { Marker } from "react-native-maps";
 import { ScrollView } from "react-native-gesture-handler";
 import { FontAwesome5 } from '@expo/vector-icons';
 import Expand from "../Expand";
-
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system'
+import ImgToBase64 from 'react-native-image-base64'
 const screen = Dimensions.get('window')
 const { height } = screen
- 
+
 const Attraction = ({ navigation, route }) => {
     const { item } = route?.params || {};
     console.log("item >>", item)
@@ -28,6 +30,45 @@ const Attraction = ({ navigation, route }) => {
         navigation.navigate('Gallery', { images: item?.images })
     }
 
+    const onShare = async () => {
+        try {
+            if (!mainImage) {
+                console.error('No image available for sharing.');
+                return;
+            }
+
+            const url = mainImage;
+            if (!url) {
+                console.error('No image available to share');
+                return;
+            }
+
+            if (!await Sharing.isAvailableAsync()) {
+                console.log('Sharing is not available on your device');
+                return;
+            }
+
+            const localUri = await FileSystem.downloadAsync(
+                url,
+                FileSystem.cacheDirectory + url.split('/').pop()
+            ).then(({ uri }) => uri);
+
+            // const message = 'Hey, I wanted to share with you this amazing attraction: ' + item?.name;
+
+            // Perform sharing
+            await Sharing.shareAsync(localUri, {
+                mimeType: 'image/jpeg',
+                dialogTitle: item?.name,
+            });
+
+            console.log('Share successful');
+        } catch (e) {
+            console.error('Error while sharing:', e);
+        }
+    };
+
+
+
     const coords = {
         latitude: item?.coordinates?.lat,
         longitude: item?.coordinates?.lon,
@@ -43,7 +84,7 @@ const Attraction = ({ navigation, route }) => {
                         <Pressable onPress={onBack} hitSlop={5}>
                             <Image style={styles.icon} source={require('../../../assets/Group 6.png')} />
                         </Pressable>
-                        <Pressable onPress={onBack} hitSlop={5}>
+                        <Pressable onPress={onShare} hitSlop={5}>
                             <Image style={styles.icon} source={require('../../../assets/Group 5.png')} />
                         </Pressable>
                     </View>
@@ -71,22 +112,27 @@ const Attraction = ({ navigation, route }) => {
                     <InfoCard text={item?.address} style={styles.address} icon={require('../../../assets/Group 15.png')} />
                     <InfoCard text={`OPEN\n${item?.opening_time}`} style={styles.timeWorking} icon={require('../../../assets/Group 16.png')} />
                 </View>
-                <MapView
-                    style={styles.maps}
-                    initialRegion={coords}
-                >
-                    <TouchableOpacity hitSlop={5} onPress={onExpand}>
-                        <View style={{ justifyContent: 'flex-end', flexDirection: 'row', marginRight: 15, paddingTop: 10 }}>
-                            <FontAwesome5 name="expand-arrows-alt" size={20} color="black" />
-                        </View>
-                    </TouchableOpacity>
-                    <Marker
+                <View>
+                    <MapView
+                        style={styles.maps}
+                        initialRegion={coords}
+                    >
+                        <Marker
 
-                        coordinate={coords}
-                        title={item?.name}
-                    // description={marker.description}
-                    />
-                </MapView>
+                            coordinate={coords}
+                            title={item?.name}
+                        // description={marker.description}
+                        />
+                    </MapView>
+                    <View style={{ position: 'absolute', alignSelf: 'flex-end', marginRight: 15, marginTop: 30 }}>
+                        <TouchableOpacity hitSlop={5} onPress={onExpand}>
+                            <View style={{ justifyContent: 'flex-end', flexDirection: 'row', marginRight: 15, paddingTop: 10 }}>
+                                <FontAwesome5 name="expand-arrows-alt" size={20} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
             </ScrollView>
 
         </SafeAreaView>

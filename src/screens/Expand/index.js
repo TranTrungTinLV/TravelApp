@@ -10,8 +10,8 @@ const Expand = ({ navigation, route }) => {
     const coords = {
         latitude: item?.coordinates?.lat,
         longitude: item?.coordinates?.lon,
-        // latitudeDelta: 0.009,
-        // longitudeDelta: 0.009
+        latitudeDelta: 0.009,
+        longitudeDelta: 0.009
     }
     const onBack = () => {
         navigation.goBack()
@@ -40,7 +40,7 @@ const Expand = ({ navigation, route }) => {
             <MapView
                 style={styles.maps}
                 initialRegion={coords}
-                customMapStyle={mapStyle}
+                
             >
                 <Marker
                     coordinate={coords}
